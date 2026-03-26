@@ -1,6 +1,6 @@
 import useLanguage from '@/lib/useLanguage';
 import SectionReveal from '@/components/SectionReveal';
-import { Target, Eye, Star, Lightbulb, Shield, Trophy } from 'lucide-react';
+import { Target, Eye, Lightbulb, Shield, Trophy } from 'lucide-react';
 
 const stats = [
   { key: 'about.stats.clients', value: '200+' },

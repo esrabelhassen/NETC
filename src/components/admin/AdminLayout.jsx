@@ -4,7 +4,6 @@ import { Button } from '@/components/ui/button';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import useLanguage from '@/lib/useLanguage';
 import useTheme from '@/lib/useTheme';
-import { base44 } from '@/api/base44Client';
 
 const navItems = [
   { path: '/admin', icon: LayoutDashboard, labelKey: 'admin.dashboard', exact: true },

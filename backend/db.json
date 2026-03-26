@@ -1,0 +1,64 @@
+{
+  "services": [
+    {
+      "id": "78591824-18e8-44f5-99bd-fb8b90e86225",
+      "created_date": "2026-03-26T21:41:39.205Z",
+      "updated_date": "2026-03-26T21:42:44.519Z",
+      "title_en": "web dev",
+      "title_fr": "web dev",
+      "title_ar": "",
+      "description_en": "okay",
+      "description_fr": "test",
+      "description_ar": "",
+      "category_id": "69652e54-6ff3-41ac-8646-602abb7596f7",
+      "price": null,
+      "price_type": "quote",
+      "service_type": "development",
+      "status": "active",
+      "order": 0
+    }
+  ],
+  "categories": [
+    {
+      "id": "69652e54-6ff3-41ac-8646-602abb7596f7",
+      "created_date": "2026-03-26T21:42:36.035Z",
+      "updated_date": "2026-03-26T21:42:36.035Z",
+      "name_en": "dev",
+      "name_fr": "",
+      "name_ar": "",
+      "description_en": "ok",
+      "description_fr": "ok",
+      "description_ar": "",
+      "icon": "",
+      "order": 0
+    }
+  ],
+  "contents": [],
+  "leads": [
+    {
+      "id": "175181b4-1fbe-46b4-9ec3-690ecfc73481",
+      "created_date": "2026-03-26T21:40:48.600Z",
+      "updated_date": "2026-03-26T21:44:26.160Z",
+      "name": "esra",
+      "email": "belhassennesra@gmail.com",
+      "phone": "92422824",
+      "interest": "support",
+      "source": "popup",
+      "status": "lost"
+    },
+    {
+      "id": "0bab3767-7887-4211-b6df-d6f97d338750",
+      "created_date": "2026-03-26T21:43:48.780Z",
+      "updated_date": "2026-03-26T21:44:19.675Z",
+      "name": "esra belhaes",
+      "email": "belhassennesra@gmail.com",
+      "phone": "92422824",
+      "company": "Auralis",
+      "message": "hello i want a valid number",
+      "interest": "general",
+      "source": "contact_form",
+      "status": "lost"
+    }
+  ],
+  "orders": []
+}

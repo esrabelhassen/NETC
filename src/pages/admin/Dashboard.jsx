@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { base44 } from '@/api/base44Client';
 import useLanguage from '@/lib/useLanguage';
-import { Users, ShoppingCart, Briefcase, DollarSign, TrendingUp } from 'lucide-react';
+import { Users, ShoppingCart, Briefcase, DollarSign } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 import moment from 'moment';
 
