@@ -1,1 +1,525 @@
+From 9342bd88bf3b6ad0ef5807a3923a1adb8e36fa8e Mon Sep 17 00:00:00 2001
+From: Codex <codex@openai.com>
+Date: Thu, 26 Mar 2026 14:30:28 +0000
+Subject: [PATCH] Replace Base44 dependency with local backend and API client
 
+
+diff --git a/backend/db.json b/backend/db.json
+new file mode 100644
+index 0000000..84e297e
+--- /dev/null
++++ b/backend/db.json
+@@ -0,0 +1,7 @@
++{
++  "services": [],
++  "categories": [],
++  "contents": [],
++  "leads": [],
++  "orders": []
++}
+diff --git a/backend/server.js b/backend/server.js
+new file mode 100644
+index 0000000..99e63c6
+--- /dev/null
++++ b/backend/server.js
+@@ -0,0 +1,126 @@
++import http from 'node:http';
++import fs from 'node:fs/promises';
++import path from 'node:path';
++import { fileURLToPath } from 'node:url';
++import { randomUUID } from 'node:crypto';
++
++const __dirname = path.dirname(fileURLToPath(import.meta.url));
++const DB_PATH = path.join(__dirname, 'db.json');
++const PORT = Number(process.env.API_PORT || 8787);
++const ENTITY_KEYS = ['services', 'categories', 'contents', 'leads', 'orders'];
++
++const json = (res, statusCode, payload) => {
++  res.writeHead(statusCode, {
++    'Content-Type': 'application/json',
++    'Access-Control-Allow-Origin': '*',
++    'Access-Control-Allow-Methods': 'GET,POST,PUT,DELETE,OPTIONS',
++    'Access-Control-Allow-Headers': 'Content-Type',
++  });
++  res.end(JSON.stringify(payload));
++};
++
++const noContent = (res) => {
++  res.writeHead(204, {
++    'Access-Control-Allow-Origin': '*',
++    'Access-Control-Allow-Methods': 'GET,POST,PUT,DELETE,OPTIONS',
++    'Access-Control-Allow-Headers': 'Content-Type',
++  });
++  res.end();
++};
++
++const readDb = async () => JSON.parse(await fs.readFile(DB_PATH, 'utf-8'));
++const writeDb = async (db) => fs.writeFile(DB_PATH, JSON.stringify(db, null, 2));
++
++const parseBody = async (req) => {
++  const chunks = [];
++  for await (const chunk of req) chunks.push(chunk);
++  const raw = Buffer.concat(chunks).toString('utf-8');
++  return raw ? JSON.parse(raw) : {};
++};
++
++const matchesFilter = (record, filter) =>
++  Object.entries(filter).every(([key, value]) => {
++    if (value === undefined || value === null || value === '') return true;
++    return String(record[key]) === String(value);
++  });
++
++const applySort = (items, sort) => {
++  if (!sort) return items;
++  const field = sort.startsWith('-') ? sort.slice(1) : sort;
++  const direction = sort.startsWith('-') ? -1 : 1;
++  return [...items].sort((a, b) => {
++    if (a[field] === b[field]) return 0;
++    if (a[field] === undefined || a[field] === null) return 1;
++    if (b[field] === undefined || b[field] === null) return -1;
++    return a[field] > b[field] ? direction : -direction;
++  });
++};
++
++const server = http.createServer(async (req, res) => {
++  if (!req.url) return json(res, 400, { message: 'Invalid request' });
++  if (req.method === 'OPTIONS') return noContent(res);
++
++  const url = new URL(req.url, `http://localhost:${PORT}`);
++  if (url.pathname === '/api/health' && req.method === 'GET') {
++    return json(res, 200, { ok: true, mode: 'local' });
++  }
++
++  const match = url.pathname.match(/^\/api\/([^/]+)(?:\/([^/]+))?$/);
++  if (!match) return json(res, 404, { message: 'Route not found' });
++
++  const [, entity, id] = match;
++  if (!ENTITY_KEYS.includes(entity)) {
++    return json(res, 404, { message: 'Unknown entity.' });
++  }
++
++  try {
++    const db = await readDb();
++
++    if (req.method === 'GET' && !id) {
++      let items = db[entity] || [];
++      const q = url.searchParams.get('q');
++      const sort = url.searchParams.get('sort') || '';
++      const limit = Number(url.searchParams.get('limit'));
++
++      if (q) items = items.filter((record) => matchesFilter(record, JSON.parse(q)));
++      items = applySort(items, sort);
++      if (!Number.isNaN(limit) && limit > 0) items = items.slice(0, limit);
++
++      return json(res, 200, items);
++    }
++
++    if (req.method === 'POST' && !id) {
++      const body = await parseBody(req);
++      const now = new Date().toISOString();
++      const payload = { id: randomUUID(), created_date: now, updated_date: now, ...body };
++      db[entity].push(payload);
++      await writeDb(db);
++      return json(res, 201, payload);
++    }
++
++    if (req.method === 'PUT' && id) {
++      const body = await parseBody(req);
++      const index = db[entity].findIndex((item) => item.id === id);
++      if (index === -1) return json(res, 404, { message: 'Record not found.' });
++      db[entity][index] = { ...db[entity][index], ...body, id, updated_date: new Date().toISOString() };
++      await writeDb(db);
++      return json(res, 200, db[entity][index]);
++    }
++
++    if (req.method === 'DELETE' && id) {
++      const before = db[entity].length;
++      db[entity] = db[entity].filter((item) => item.id !== id);
++      if (db[entity].length === before) return json(res, 404, { message: 'Record not found.' });
++      await writeDb(db);
++      return noContent(res);
++    }
++
++    return json(res, 405, { message: 'Method not allowed.' });
++  } catch (error) {
++    return json(res, 500, { message: error.message || 'Unexpected server error.' });
++  }
++});
++
++server.listen(PORT, () => {
++  console.log(`Local API running on http://localhost:${PORT}`);
++});
+diff --git a/package.json b/package.json
+index 2cd1636..991d3b5 100644
+--- a/package.json
++++ b/package.json
+@@ -5,6 +5,7 @@
+   "type": "module",
+   "scripts": {
+     "dev": "vite",
++    "api": "node backend/server.js",
+     "build": "vite build",
+     "lint": "eslint . --quiet",
+     "lint:fix": "eslint . --fix",
+@@ -97,4 +98,4 @@
+     "typescript": "^5.8.2",
+     "vite": "^6.1.0"
+   }
+-}
+\ No newline at end of file
++}
+diff --git a/public/manifest.json b/public/manifest.json
+new file mode 100644
+index 0000000..a565cf2
+--- /dev/null
++++ b/public/manifest.json
+@@ -0,0 +1,15 @@
++{
++  "name": "NETC",
++  "short_name": "NETC",
++  "start_url": "/",
++  "display": "standalone",
++  "background_color": "#0D1B4C",
++  "theme_color": "#0D1B4C",
++  "icons": [
++    {
++      "src": "https://base44.com/logo_v2.svg",
++      "sizes": "192x192",
++      "type": "image/svg+xml"
++    }
++  ]
++}
+diff --git a/src/api/base44Client.js b/src/api/base44Client.js
+index 302d606..910ecde 100644
+--- a/src/api/base44Client.js
++++ b/src/api/base44Client.js
+@@ -1,14 +1,92 @@
+-import { createClient } from '@base44/sdk';
+-import { appParams } from '@/lib/app-params';
+-
+-const { appId, token, functionsVersion, appBaseUrl } = appParams;
+-
+-//Create a client with authentication required
+-export const base44 = createClient({
+-  appId,
+-  token,
+-  functionsVersion,
+-  serverUrl: '',
+-  requiresAuth: false,
+-  appBaseUrl
+-});
++const API_BASE = import.meta.env.VITE_API_BASE_URL || '/api';
++
++const entityPath = {
++  Service: 'services',
++  Category: 'categories',
++  SiteContent: 'contents',
++  Lead: 'leads',
++  Order: 'orders',
++};
++
++const request = async (path, options = {}) => {
++  const response = await fetch(`${API_BASE}${path}`, {
++    headers: { 'Content-Type': 'application/json', ...(options.headers || {}) },
++    ...options,
++  });
++
++  if (!response.ok) {
++    const payload = await response.json().catch(() => ({}));
++    const error = new Error(payload.message || `Request failed with status ${response.status}`);
++    error.status = response.status;
++    error.data = payload;
++    throw error;
++  }
++
++  if (response.status === 204) return null;
++  return response.json();
++};
++
++const toQueryString = (params) => {
++  const search = new URLSearchParams();
++  Object.entries(params).forEach(([key, value]) => {
++    if (value !== undefined && value !== null && value !== '') {
++      search.set(key, String(value));
++    }
++  });
++  return search.toString();
++};
++
++const entityApi = (name) => {
++  const basePath = `/${entityPath[name]}`;
++
++  return {
++    list: async (sort = '', limit) => {
++      const query = toQueryString({ sort, limit });
++      return request(`${basePath}${query ? `?${query}` : ''}`);
++    },
++    filter: async (filters = {}, sort = '', limit) => {
++      const query = toQueryString({
++        sort,
++        limit,
++        q: JSON.stringify(filters),
++      });
++      return request(`${basePath}${query ? `?${query}` : ''}`);
++    },
++    create: async (payload) => request(basePath, { method: 'POST', body: JSON.stringify(payload) }),
++    update: async (id, payload) =>
++      request(`${basePath}/${id}`, { method: 'PUT', body: JSON.stringify(payload) }),
++    delete: async (id) => request(`${basePath}/${id}`, { method: 'DELETE' }),
++  };
++};
++
++export const base44 = {
++  entities: {
++    Service: entityApi('Service'),
++    Category: entityApi('Category'),
++    SiteContent: entityApi('SiteContent'),
++    Lead: entityApi('Lead'),
++    Order: entityApi('Order'),
++  },
++  auth: {
++    me: async () => {
++      const token = localStorage.getItem('mock_access_token');
++      if (!token) {
++        const error = new Error('Authentication required');
++        error.status = 401;
++        throw error;
++      }
++      return {
++        id: 'local-admin',
++        role: 'admin',
++        email: 'admin@local.dev',
++      };
++    },
++    logout: () => {
++      localStorage.removeItem('mock_access_token');
++    },
++    redirectToLogin: () => {
++      localStorage.setItem('mock_access_token', 'dev-token');
++      window.location.reload();
++    },
++  },
++};
+diff --git a/src/lib/AuthContext.jsx b/src/lib/AuthContext.jsx
+index cdc0579..52ad73e 100644
+--- a/src/lib/AuthContext.jsx
++++ b/src/lib/AuthContext.jsx
+@@ -1,7 +1,5 @@
+ import React, { createContext, useState, useContext, useEffect, useCallback } from 'react';
+ import { base44 } from '@/api/base44Client';
+-import { appParams } from '@/lib/app-params';
+-import { createAxiosClient } from '@base44/sdk/dist/utils/axios-client';
+ 
+ const AuthContext = createContext();
+ 
+@@ -9,137 +7,59 @@ export const AuthProvider = ({ children }) => {
+   const [user, setUser] = useState(null);
+   const [isAuthenticated, setIsAuthenticated] = useState(false);
+   const [isLoadingAuth, setIsLoadingAuth] = useState(true);
+-  const [isLoadingPublicSettings, setIsLoadingPublicSettings] = useState(true);
++  const [isLoadingPublicSettings, setIsLoadingPublicSettings] = useState(false);
+   const [authError, setAuthError] = useState(null);
+-  const [appPublicSettings, setAppPublicSettings] = useState(null); // Contains only { id, public_settings }
++  const [appPublicSettings] = useState({ mode: 'local' });
+ 
+-  useEffect(() => {
+-    checkAppState();
+-  }, []);
+-
+-  const checkAppState = async () => {
++  const checkAppState = useCallback(async () => {
+     try {
+-      setIsLoadingPublicSettings(true);
+-      setAuthError(null);
+-      
+-      // First, check app public settings (with token if available)
+-      // This will tell us if auth is required, user not registered, etc.
+-      const appClient = createAxiosClient({
+-        baseURL: `/api/apps/public`,
+-        headers: {
+-          'X-App-Id': appParams.appId
+-        },
+-        token: appParams.token, // Include token if available
+-        interceptResponses: true
+-      });
+-      
+-      try {
+-        const publicSettings = await appClient.get(`/prod/public-settings/by-id/${appParams.appId}`);
+-        setAppPublicSettings(publicSettings);
+-        
+-        // If we got the app public settings successfully, check if user is authenticated
+-        if (appParams.token) {
+-          await checkUserAuth();
+-        } else {
+-          setIsLoadingAuth(false);
+-          setIsAuthenticated(false);
+-        }
+-        setIsLoadingPublicSettings(false);
+-      } catch (appError) {
+-        console.error('App state check failed:', appError);
+-        
+-        // Handle app-level errors
+-        if (appError.status === 403 && appError.data?.extra_data?.reason) {
+-          const reason = appError.data.extra_data.reason;
+-          if (reason === 'auth_required') {
+-            setAuthError({
+-              type: 'auth_required',
+-              message: 'Authentication required'
+-            });
+-          } else if (reason === 'user_not_registered') {
+-            setAuthError({
+-              type: 'user_not_registered',
+-              message: 'User not registered for this app'
+-            });
+-          } else {
+-            setAuthError({
+-              type: reason,
+-              message: appError.message
+-            });
+-          }
+-        } else {
+-          setAuthError({
+-            type: 'unknown',
+-            message: appError.message || 'Failed to load app'
+-          });
+-        }
+-        setIsLoadingPublicSettings(false);
+-        setIsLoadingAuth(false);
+-      }
+-    } catch (error) {
+-      console.error('Unexpected error:', error);
+-      setAuthError({
+-        type: 'unknown',
+-        message: error.message || 'An unexpected error occurred'
+-      });
+-      setIsLoadingPublicSettings(false);
+-      setIsLoadingAuth(false);
+-    }
+-  };
+-
+-  const checkUserAuth = async () => {
+-    try {
+-      // Now check if the user is authenticated
+       setIsLoadingAuth(true);
++      setAuthError(null);
+       const currentUser = await base44.auth.me();
+       setUser(currentUser);
+       setIsAuthenticated(true);
+-      setIsLoadingAuth(false);
+     } catch (error) {
+-      console.error('User auth check failed:', error);
+-      setIsLoadingAuth(false);
++      setUser(null);
+       setIsAuthenticated(false);
+-      
+-      // If user auth fails, it might be an expired token
+       if (error.status === 401 || error.status === 403) {
+-        setAuthError({
+-          type: 'auth_required',
+-          message: 'Authentication required'
+-        });
++        setAuthError({ type: 'auth_required', message: 'Authentication required' });
+       }
++    } finally {
++      setIsLoadingAuth(false);
+     }
+-  };
++  }, []);
++
++  useEffect(() => {
++    checkAppState();
++  }, [checkAppState]);
+ 
+   const logout = useCallback((shouldRedirect = true) => {
+     setUser(null);
+     setIsAuthenticated(false);
+-    
++    base44.auth.logout();
+     if (shouldRedirect) {
+-      // Use the SDK's logout method which handles token cleanup and redirect
+-      base44.auth.logout(window.location.href);
+-    } else {
+-      // Just remove the token without redirect
+-      base44.auth.logout();
++      window.location.href = '/';
+     }
+   }, []);
+ 
+   const navigateToLogin = useCallback(() => {
+-    // Use the SDK's redirectToLogin method
+     base44.auth.redirectToLogin(window.location.href);
+   }, []);
+ 
+   return (
+-    <AuthContext.Provider value={{ 
+-      user, 
+-      isAuthenticated, 
+-      isLoadingAuth,
+-      isLoadingPublicSettings,
+-      authError,
+-      appPublicSettings,
+-      logout,
+-      navigateToLogin,
+-      checkAppState
+-    }}>
++    <AuthContext.Provider
++      value={{
++        user,
++        isAuthenticated,
++        isLoadingAuth,
++        isLoadingPublicSettings,
++        authError,
++        appPublicSettings,
++        logout,
++        navigateToLogin,
++        checkAppState,
++      }}
++    >
+       {children}
+     </AuthContext.Provider>
+   );
+diff --git a/vite.config.js b/vite.config.js
+index a1c59ad..b1fb24d 100644
+--- a/vite.config.js
++++ b/vite.config.js
+@@ -1,20 +1,23 @@
+-import base44 from "@base44/vite-plugin"
+ import react from '@vitejs/plugin-react'
+ import { defineConfig } from 'vite'
++import path from 'node:path'
++import { fileURLToPath } from 'node:url'
++
++const __dirname = path.dirname(fileURLToPath(import.meta.url));
+ 
+-// https://vite.dev/config/
+ export default defineConfig({
+-  logLevel: 'error', // Suppress warnings, only show errors
+-  plugins: [
+-    base44({
+-      // Support for legacy code that imports the base44 SDK with @/integrations, @/entities, etc.
+-      // can be removed if the code has been updated to use the new SDK imports from @base44/sdk
+-      legacySDKImports: process.env.BASE44_LEGACY_SDK_IMPORTS === 'true',
+-      hmrNotifier: true,
+-      navigationNotifier: true,
+-      analyticsTracker: true,
+-      visualEditAgent: true
+-    }),
+-    react(),
+-  ]
+-});
+\ No newline at end of file
++  plugins: [react()],
++  resolve: {
++    alias: {
++      '@': path.resolve(__dirname, 'src'),
++    },
++  },
++  server: {
++    proxy: {
++      '/api': {
++        target: 'http://localhost:8787',
++        changeOrigin: true,
++      },
++    },
++  },
++});
