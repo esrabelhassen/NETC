@@ -1,0 +1,29 @@
+{
+  "name": "SiteContent",
+  "type": "object",
+  "properties": {
+    "section": {
+      "type": "string",
+      "title": "Section Key"
+    },
+    "content_en": {
+      "type": "string",
+      "title": "Content (EN)"
+    },
+    "content_fr": {
+      "type": "string",
+      "title": "Content (FR)"
+    },
+    "content_ar": {
+      "type": "string",
+      "title": "Content (AR)"
+    },
+    "metadata": {
+      "type": "string",
+      "title": "Metadata JSON"
+    }
+  },
+  "required": [
+    "section"
+  ]
+}

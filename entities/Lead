@@ -1,0 +1,56 @@
+{
+  "name": "Lead",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "title": "Full Name"
+    },
+    "email": {
+      "type": "string",
+      "title": "Email"
+    },
+    "phone": {
+      "type": "string",
+      "title": "Phone"
+    },
+    "company": {
+      "type": "string",
+      "title": "Company"
+    },
+    "interest": {
+      "type": "string",
+      "title": "Interest"
+    },
+    "message": {
+      "type": "string",
+      "title": "Message"
+    },
+    "source": {
+      "type": "string",
+      "enum": [
+        "popup",
+        "contact_form",
+        "quote_request",
+        "demo_request"
+      ],
+      "title": "Source"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "new",
+        "contacted",
+        "qualified",
+        "converted",
+        "lost"
+      ],
+      "title": "Status",
+      "default": "new"
+    }
+  },
+  "required": [
+    "name",
+    "email"
+  ]
+}

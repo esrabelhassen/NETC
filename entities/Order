@@ -1,0 +1,51 @@
+{
+  "name": "Order",
+  "type": "object",
+  "properties": {
+    "service_id": {
+      "type": "string",
+      "title": "Service ID"
+    },
+    "service_title": {
+      "type": "string",
+      "title": "Service Title"
+    },
+    "customer_name": {
+      "type": "string",
+      "title": "Customer Name"
+    },
+    "customer_email": {
+      "type": "string",
+      "title": "Customer Email"
+    },
+    "customer_phone": {
+      "type": "string",
+      "title": "Customer Phone"
+    },
+    "amount": {
+      "type": "number",
+      "title": "Amount"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "pending",
+        "confirmed",
+        "paid",
+        "failed",
+        "cancelled"
+      ],
+      "title": "Status",
+      "default": "pending"
+    },
+    "notes": {
+      "type": "string",
+      "title": "Notes"
+    }
+  },
+  "required": [
+    "service_id",
+    "customer_email",
+    "status"
+  ]
+}

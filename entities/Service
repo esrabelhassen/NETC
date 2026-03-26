@@ -1,0 +1,91 @@
+{
+  "name": "Service",
+  "type": "object",
+  "properties": {
+    "title_en": {
+      "type": "string",
+      "title": "Title (EN)"
+    },
+    "title_fr": {
+      "type": "string",
+      "title": "Title (FR)"
+    },
+    "title_ar": {
+      "type": "string",
+      "title": "Title (AR)"
+    },
+    "description_en": {
+      "type": "string",
+      "title": "Description (EN)"
+    },
+    "description_fr": {
+      "type": "string",
+      "title": "Description (FR)"
+    },
+    "description_ar": {
+      "type": "string",
+      "title": "Description (AR)"
+    },
+    "category_id": {
+      "type": "string",
+      "title": "Category ID"
+    },
+    "price": {
+      "type": "number",
+      "title": "Price"
+    },
+    "price_type": {
+      "type": "string",
+      "enum": [
+        "fixed",
+        "quote",
+        "free"
+      ],
+      "title": "Price Type",
+      "default": "quote"
+    },
+    "service_type": {
+      "type": "string",
+      "enum": [
+        "development",
+        "non-development"
+      ],
+      "title": "Service Type"
+    },
+    "image": {
+      "type": "string",
+      "title": "Image URL"
+    },
+    "features_en": {
+      "type": "string",
+      "title": "Features (EN)"
+    },
+    "features_fr": {
+      "type": "string",
+      "title": "Features (FR)"
+    },
+    "features_ar": {
+      "type": "string",
+      "title": "Features (AR)"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "active",
+        "draft",
+        "archived"
+      ],
+      "title": "Status",
+      "default": "active"
+    },
+    "order": {
+      "type": "number",
+      "title": "Display Order",
+      "default": 0
+    }
+  },
+  "required": [
+    "title_en",
+    "status"
+  ]
+}

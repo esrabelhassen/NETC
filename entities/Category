@@ -1,0 +1,46 @@
+{
+  "name": "Category",
+  "type": "object",
+  "properties": {
+    "name_en": {
+      "type": "string",
+      "title": "Name (EN)"
+    },
+    "name_fr": {
+      "type": "string",
+      "title": "Name (FR)"
+    },
+    "name_ar": {
+      "type": "string",
+      "title": "Name (AR)"
+    },
+    "description_en": {
+      "type": "string",
+      "title": "Description (EN)"
+    },
+    "description_fr": {
+      "type": "string",
+      "title": "Description (FR)"
+    },
+    "description_ar": {
+      "type": "string",
+      "title": "Description (AR)"
+    },
+    "icon": {
+      "type": "string",
+      "title": "Icon Name"
+    },
+    "image": {
+      "type": "string",
+      "title": "Image URL"
+    },
+    "order": {
+      "type": "number",
+      "title": "Display Order",
+      "default": 0
+    }
+  },
+  "required": [
+    "name_en"
+  ]
+}
