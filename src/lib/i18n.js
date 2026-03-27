@@ -9,10 +9,10 @@ const translations = {
     'nav.getStarted': 'Get Started',
 
     // Hero
-    'hero.title1': 'Transform Your',
-    'hero.title2': 'Enterprise',
-    'hero.title3': 'with Odoo ERP',
-    'hero.subtitle': 'We help enterprises integrate, customize, and scale with Odoo ERP — delivering seamless digital transformation.',
+    'hero.title1': 'Innovate.',
+    'hero.title2': 'Scale.',
+    'hero.title3': ' Succeed.',
+    'hero.subtitle': 'We help enterprises integrate, customize, and scale  — delivering seamless digital transformation.',
     'hero.cta1': 'Get Started',
     'hero.cta2': 'Request a Demo',
 

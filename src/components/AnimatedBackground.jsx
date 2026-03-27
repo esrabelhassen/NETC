@@ -1,123 +1,84 @@
-import { useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
 
-const orbs = [
-  {
-    size: 800,
-    style: { top: '-15%', left: '-10%' },
-    color: 'rgba(13,27,76,0.45)',
-    blur: 80,
-    animate: { x: [0, 40, -20, 0], y: [0, -50, 30, 0] },
-    duration: 22,
-  },
-  {
-    size: 600,
-    style: { top: '-10%', right: '-5%' },
-    color: 'rgba(255,74,28,0.28)',
-    blur: 90,
-    animate: { x: [0, -50, 20, 0], y: [0, 40, -30, 0] },
-    duration: 18,
-  },
-  {
-    size: 700,
-    style: { bottom: '-20%', right: '-10%' },
-    color: 'rgba(13,27,76,0.38)',
-    blur: 100,
-    animate: { x: [0, 30, -40, 0], y: [0, 50, -20, 0] },
-    duration: 26,
-  },
-  {
-    size: 500,
-    style: { bottom: '-5%', left: '-5%' },
-    color: 'rgba(255,74,28,0.22)',
-    blur: 70,
-    animate: { x: [0, 60, -20, 0], y: [0, -40, 20, 0] },
-    duration: 20,
-  },
-  {
-    size: 650,
-    style: { top: '30%', left: '25%' },
-    color: 'rgba(13,27,76,0.20)',
-    blur: 120,
-    animate: { x: [0, -30, 40, 0], y: [0, 30, -40, 0] },
-    duration: 30,
-  },
-];
-
 export default function AnimatedBackground() {
-  const cursorRef = useRef(null);
-  const gridRef = useRef(null);
-
-  useEffect(() => {
-    const move = (e) => {
-      if (cursorRef.current) {
-        cursorRef.current.style.transform = `translate(${e.clientX - 200}px, ${e.clientY - 200}px)`;
-      }
-      if (gridRef.current) {
-        const x = (e.clientX / window.innerWidth - 0.5) * 18;
-        const y = (e.clientY / window.innerHeight - 0.5) * 18;
-        gridRef.current.style.transform = `translate(${x}px, ${y}px)`;
-      }
-    };
-    window.addEventListener('mousemove', move, { passive: true });
-    return () => window.removeEventListener('mousemove', move);
-  }, []);
-
   return (
-    <div className="fixed inset-0 overflow-hidden pointer-events-none z-0" aria-hidden="true">
+    <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden" aria-hidden="true">
+      {/* Theme base (navy night sky) */}
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,#12214a_0%,#0b1634_45%,#070f24_100%)]" />
 
-      {/* Floating orbs */}
-      {orbs.map((orb, i) => (
-        <motion.div
-          key={i}
-          className="absolute rounded-full"
-          style={{
-            width: orb.size,
-            height: orb.size,
-            background: `radial-gradient(circle, ${orb.color} 0%, transparent 70%)`,
-            filter: `blur(${orb.blur}px)`,
-            ...orb.style,
-          }}
-          animate={orb.animate}
-          transition={{
-            duration: orb.duration,
-            repeat: Infinity,
-            ease: 'easeInOut',
-            repeatType: 'loop',
-          }}
-        />
-      ))}
-
-      {/* Grid overlay with parallax */}
-      <div
-        ref={gridRef}
-        className="absolute inset-[-5%] transition-transform duration-75"
+      {/* Aurora Stripe Layer 1 */}
+      <motion.div
+        className="absolute -top-[20%] -left-[25%] w-[150%] h-[140%] blur-2xl mix-blend-screen"
         style={{
-          backgroundImage: `
-            linear-gradient(rgba(13,27,76,0.06) 1px, transparent 1px),
-            linear-gradient(90deg, rgba(13,27,76,0.06) 1px, transparent 1px)
-          `,
-          backgroundSize: '60px 60px',
-          maskImage: 'radial-gradient(ellipse 80% 80% at 50% 50%, black 30%, transparent 100%)',
-          WebkitMaskImage: 'radial-gradient(ellipse 80% 80% at 50% 50%, black 30%, transparent 100%)',
+          background:
+            `repeating-linear-gradient(
+              102deg,
+              rgba(255,74,28,0.00) 0%,
+              rgba(255,74,28,0.22) 6%,
+              rgba(110,220,255,0.26) 12%,
+              rgba(170,130,255,0.20) 18%,
+              rgba(255,74,28,0.00) 24%
+            )`,
+          maskImage:
+            'radial-gradient(ellipse 75% 60% at 50% 45%, black 35%, transparent 100%)',
+          WebkitMaskImage:
+            'radial-gradient(ellipse 75% 60% at 50% 45%, black 35%, transparent 100%)',
+        }}
+        animate={{
+          x: [0, 40, -25, 0],
+          y: [0, -18, 24, 0],
+          backgroundPosition: ['0% 0%', '120% 0%', '0% 0%'],
+        }}
+        transition={{
+          duration: 24,
+          repeat: Infinity,
+          ease: 'easeInOut',
         }}
       />
 
-      {/* Cursor glow */}
-      <div
-        ref={cursorRef}
-        className="absolute hidden lg:block"
+      {/* Aurora Stripe Layer 2 */}
+      <motion.div
+        className="absolute -top-[30%] -right-[20%] w-[150%] h-[150%] blur-xl mix-blend-screen"
         style={{
-          width: 400,
-          height: 400,
-          top: 0,
-          left: 0,
-          background: 'radial-gradient(circle, rgba(255,74,28,0.14) 0%, transparent 70%)',
-          borderRadius: '50%',
-          transition: 'transform 0.12s ease-out',
-          pointerEvents: 'none',
+          background:
+            `repeating-linear-gradient(
+              100deg,
+              rgba(255,74,28,0.00) 0%,
+              rgba(70, 158, 199, 0.51) 6%,
+              rgba(255, 60, 11, 0.71) 12%,
+              rgba(140, 255, 220, 0.54) 18%,
+              rgba(255,74,28,0.00) 24%
+            )`,
+          maskImage:
+            'radial-gradient(ellipse 70% 58% at 55% 40%, black 35%, transparent 100%)',
+          WebkitMaskImage:
+            'radial-gradient(ellipse 70% 58% at 55% 40%, black 35%, transparent 100%)',
+        }}
+        animate={{
+          x: [0, 145, -90, 0],
+          y: [0, -30, 45, 0],
+          backgroundPosition: ['0% 0%', '220% 0%', '0% 0%'],
+        }}
+        transition={{
+          duration: 9,
+          repeat: Infinity,
+          ease: 'easeInOut',
         }}
       />
+
+      {/* Aurora glow wash */}
+      <motion.div
+        className="absolute inset-0 mix-blend-screen"
+        style={{
+          background:
+            'radial-gradient(circle at 25% 30%, rgba(255,74,28,0.14), transparent 30%), radial-gradient(circle at 70% 25%, rgba(120,210,255,0.14), transparent 34%), radial-gradient(circle at 50% 55%, rgba(175,130,255,0.10), transparent 38%)',
+        }}
+        animate={{ opacity: [0.45, 0.75, 0.55, 0.45] }}
+        transition={{ duration: 16, repeat: Infinity, ease: 'easeInOut' }}
+      />
+
+      {/* Vignette for readability */}
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,transparent_38%,rgba(0,0,0,0.30)_100%)]" />
     </div>
   );
 }
