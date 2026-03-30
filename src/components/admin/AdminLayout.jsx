@@ -58,7 +58,7 @@ export default function AdminLayout() {
         <div className="p-3 border-t border-border/50 space-y-1">
           <Link to="/" className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm text-muted-foreground hover:text-foreground hover:bg-secondary/50 transition-colors">
             <LogOut className="h-4 w-4" />
-            Back to Site
+            {t('admin.backToSite')}
           </Link>
         </div>
       </aside>
@@ -73,7 +73,7 @@ export default function AdminLayout() {
               <DropdownMenuTrigger asChild>
                 <Button variant="outline" size="sm" className="gap-2">
                   <LayoutDashboard className="h-4 w-4" />
-                  Menu
+                  {t('admin.menu')}
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="start">

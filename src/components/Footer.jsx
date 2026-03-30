@@ -36,10 +36,10 @@ export default function Footer({ t }) {
           <div>
             <h4 className="text-sm font-semibold text-foreground mb-4">{t('footer.services')}</h4>
             <ul className="space-y-2.5">
-              <li><span className="text-sm text-muted-foreground">ERP Implementation</span></li>
-              <li><span className="text-sm text-muted-foreground">Custom Development</span></li>
-              <li><span className="text-sm text-muted-foreground">Data Migration</span></li>
-              <li><span className="text-sm text-muted-foreground">Training & Support</span></li>
+              <li><span className="text-sm text-muted-foreground">{t('footer.services.erp')}</span></li>
+              <li><span className="text-sm text-muted-foreground">{t('footer.services.custom')}</span></li>
+              <li><span className="text-sm text-muted-foreground">{t('footer.services.migration')}</span></li>
+              <li><span className="text-sm text-muted-foreground">{t('footer.services.training')}</span></li>
             </ul>
           </div>
 
@@ -48,8 +48,8 @@ export default function Footer({ t }) {
             <h4 className="text-sm font-semibold text-foreground mb-4">{t('footer.connect')}</h4>
             <ul className="space-y-2.5">
               <li><Link to="/contact" className="text-sm text-muted-foreground hover:text-accent transition-colors">{t('nav.contact')}</Link></li>
-              <li><span className="text-sm text-muted-foreground">direction@netc.fr</span></li>
-              <li><span className="text-sm text-muted-foreground">+216 20 784 272</span></li>
+              <li><span className="text-sm text-muted-foreground">{t('footer.contact.email')}</span></li>
+              <li><span className="text-sm text-muted-foreground">{t('footer.contact.phone')}</span></li>
             </ul>
           </div>
         </div>

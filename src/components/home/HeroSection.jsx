@@ -17,7 +17,7 @@ export default function HeroSection({ t }) {
           className="inline-flex items-center gap-2 px-4 py-2 rounded-full glass border border-border/50 text-sm text-muted-foreground mb-8"
         >
           <span className="w-2 h-2 rounded-full bg-accent animate-pulse" />
-          Odoo ERP Integration Experts
+          {t('hero.badge')}
         </motion.div>
 
         {/* Title */}
