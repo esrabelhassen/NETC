@@ -19,7 +19,7 @@ export default function Home() {
   return (
     <div>
       <HeroSection t={t} />
-      <ServicesPreview t={t} services={services} />
+      <ServicesPreview t={t} tField={tField} services={services} />
       <WhySection t={t} />
       <CTASection t={t} />
     </div>

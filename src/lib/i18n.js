@@ -26,6 +26,18 @@ const translations = {
     'services.contactUs': 'Contact Us',
     'services.from': 'From',
     'services.getQuote': 'Get a Quote',
+    'services.default.title1': 'Custom Module Development',
+    'services.default.desc1': 'Tailor-made Odoo modules designed for your unique business processes.',
+    'services.default.title2': 'ERP Implementation',
+    'services.default.desc2': 'End-to-end Odoo ERP deployment with seamless migration.',
+    'services.default.title3': 'Data Migration',
+    'services.default.desc3': 'Secure and accurate data transfer from legacy systems to Odoo.',
+    'services.default.title4': 'Support & Maintenance',
+    'services.default.desc4': '24/7 technical support to keep your ERP running smoothly.',
+    'services.default.title5': 'Business Intelligence',
+    'services.default.desc5': 'Advanced reporting and analytics dashboards for data-driven decisions.',
+    'services.default.title6': 'Integration Services',
+    'services.default.desc6': 'Connect Odoo with third-party apps and APIs seamlessly.',
 
     // Why NETC
     'why.title': 'Why Choose NETC',
@@ -312,6 +324,18 @@ const translations = {
     'common.active': 'Actif',
     'common.draft': 'Brouillon',
     'common.archived': 'Archivé',
+    'services.default.title1': 'Développement de modules personnalisés',
+    'services.default.desc1': 'Modules Odoo sur mesure conçus pour vos processus métier uniques.',
+    'services.default.title2': 'Implémentation ERP',
+    'services.default.desc2': 'Déploiement Odoo ERP de bout en bout avec migration fluide.',
+    'services.default.title3': 'Migration de données',
+    'services.default.desc3': 'Transfert sécurisé et précis des données des systèmes existants vers Odoo.',
+    'services.default.title4': 'Support & Maintenance',
+    'services.default.desc4': 'Support technique 24/7 pour maintenir votre ERP opérationnel.',
+    'services.default.title5': 'Business Intelligence',
+    'services.default.desc5': 'Tableaux de bord avancés pour des décisions basées sur les données.',
+    'services.default.title6': 'Services d\'intégration',
+    'services.default.desc6': 'Connectez Odoo avec des applications tierces et des APIs facilement.',
   },
 
   ar: {
@@ -464,8 +488,20 @@ const translations = {
     'common.active': 'نشط',
     'common.draft': 'مسودة',
     'common.archived': 'مؤرشف',
-  },
-};
+    'services.default.title1': 'تطوير وحدات مخصصة',
+    'services.default.desc1': 'وحدات أودو مصممة خصيصًا لعمليات عملك الفريدة.',
+    'services.default.title2': 'تنفيذ ERP',
+    'services.default.desc2': 'نشر أودو ERP الشامل مع ترحيل سلس.',
+    'services.default.title3': 'ترحيل البيانات',
+    'services.default.desc3': 'نقل آمن ودقيق للبيانات من الأنظمة القديمة إلى أودو.',
+    'services.default.title4': 'الدعم والصيانة',
+    'services.default.desc4': 'دعم تقني على مدار الساعة للحفاظ على تشغيل نظامك.',
+    'services.default.title5': 'ذكاء الأعمال',
+    'services.default.desc5': 'لوحات تحليلات متقدمة لاتخاذ قرارات مبنية على البيانات.',
+    'services.default.title6': 'خدمات التكامل',
+    'services.default.desc6': 'ربط أودو بتطبيقات الطرف الثالث وواجهات البرمجة بسلاسة.',
+      },
+    };
 
 export function getTranslation(lang, key) {
   return translations[lang]?.[key] || translations['en']?.[key] || key;
