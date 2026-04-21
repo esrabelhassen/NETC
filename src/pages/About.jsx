@@ -1,22 +1,81 @@
+import { useEffect, useRef, useState } from 'react';
 import useLanguage from '@/lib/useLanguage';
 import SectionReveal from '@/components/SectionReveal';
 import { Target, Eye, Lightbulb, Shield, Trophy } from 'lucide-react';
 
 const stats = [
-  { key: 'about.stats.clients', value: '200+' },
-  { key: 'about.stats.projects', value: '500+' },
-  { key: 'about.stats.countries', value: '30+' },
-  { key: 'about.stats.uptime', value: '99.9%' },
+  { emoji: '☕', value: 2847, labelKey: 'about.stats.coffees', suffix: '+' },
+  { emoji: '🌙', value: 438, labelKey: 'about.stats.brainstorms', suffix: '' },
+  { emoji: '💡', value: 12, labelKey: 'about.stats.ideas', suffix: '' },
+  { emoji: '🔥', value: 91, labelKey: 'about.stats.problems', suffix: '+' },
 ];
 
 export default function About() {
   const { t } = useLanguage();
+  const statsRef = useRef(null);
+  const [displayValues, setDisplayValues] = useState(() => stats.map(() => 0));
+  const hasAnimatedRef = useRef(false);
+  const timerIdsRef = useRef([]);
 
   const values = [
     { icon: Lightbulb, title: t('about.value1'), desc: t('about.value1Desc') },
     { icon: Shield, title: t('about.value2'), desc: t('about.value2Desc') },
     { icon: Trophy, title: t('about.value3'), desc: t('about.value3Desc') },
   ];
+
+  useEffect(() => {
+    if (!statsRef.current) return undefined;
+    const startAnimation = () => {
+      if (hasAnimatedRef.current) return;
+      hasAnimatedRef.current = true;
+      const duration = 2000;
+      const steps = 80;
+      stats.forEach((stat, index) => {
+        for (let step = 1; step <= steps; step += 1) {
+          const timer = setTimeout(() => {
+            setDisplayValues((prev) => {
+              const next = [...prev];
+              const nextValue = Math.min(
+                stat.value,
+                Math.round((stat.value * step) / steps),
+              );
+              next[index] = nextValue;
+              return next;
+            });
+          }, (step * duration) / steps);
+          timerIdsRef.current.push(timer);
+        }
+        const finalTimer = setTimeout(() => {
+          setDisplayValues((prev) => {
+            const next = [...prev];
+            next[index] = stat.value;
+            return next;
+          });
+        }, duration + 20);
+        timerIdsRef.current.push(finalTimer);
+      });
+    };
+
+    const observer = new IntersectionObserver(([entry]) => {
+      if (entry.isIntersecting) {
+        startAnimation();
+        observer.disconnect();
+      }
+    }, { threshold: 0.3 });
+
+    const rect = statsRef.current.getBoundingClientRect();
+    if (rect.top <= window.innerHeight) {
+      startAnimation();
+      observer.disconnect();
+    } else {
+      observer.observe(statsRef.current);
+    }
+
+    return () => {
+      observer.disconnect();
+      timerIdsRef.current.forEach(clearTimeout);
+    };
+  }, []);
 
   return (
     <div className="pt-24 pb-20">
@@ -38,11 +97,15 @@ export default function About() {
       <section className="py-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <SectionReveal>
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
+            <div ref={statsRef} className="grid grid-cols-2 lg:grid-cols-4 gap-6">
               {stats.map((stat, i) => (
                 <div key={i} className="glass rounded-3xl p-8 text-center border border-border/30">
-                  <div className="text-4xl font-inter font-bold text-accent mb-2">{stat.value}</div>
-                  <div className="text-sm text-muted-foreground">{t(stat.key)}</div>
+                  <div className="text-4xl mb-2">{stat.emoji}</div>
+                  <div className="text-5xl font-bold text-orange-400 flex items-baseline justify-center gap-1">
+                    <span>{(displayValues[i] || 0).toLocaleString()}</span>
+                    <span className="text-4xl font-bold text-orange-400">{stat.suffix}</span>
+                  </div>
+                  <div className="text-base text-white/60 mt-2">{t(stat.labelKey)}</div>
                 </div>
               ))}
             </div>

@@ -7,6 +7,7 @@ import { AuthProvider, useAuth } from '@/lib/AuthContext';
 import UserNotRegisteredError from '@/components/UserNotRegisteredError';
 import useLanguage from '@/lib/useLanguage';
 import useTheme from '@/lib/useTheme';
+import { LanguageProvider, useLang } from '@/lib/LanguageContext';
 import PublicLayout from './components/PublicLayout';
 import AdminLayout from './components/admin/AdminLayout';
 import Home from './pages/Home';
@@ -19,11 +20,13 @@ import AdminServices from './pages/admin/AdminServices';
 import AdminLeads from './pages/admin/Leads';
 import AdminOrders from './pages/admin/Orders';
 import AdminContent from './pages/admin/Content';
+import Videos from '@/pages/admin/Videos';
+import PasscodePage from './pages/admin/Passcode';
 
 const AuthenticatedApp = () => {
-  const { isLoadingAuth, isLoadingPublicSettings, authError, navigateToLogin } = useAuth();
-  const langHook = useLanguage();
-  const themeHook = useTheme();
+  const { isLoadingAuth, isLoadingPublicSettings, authError, isAuthenticated } = useAuth();
+  const langHook = useLang();
+  useTheme();
 
   if (isLoadingPublicSettings || isLoadingAuth) {
     return (
@@ -38,27 +41,25 @@ const AuthenticatedApp = () => {
     );
   }
 
-  if (authError) {
-    if (authError.type === 'user_not_registered') {
-      return <UserNotRegisteredError />;
-    } else if (authError.type === 'auth_required') {
-      navigateToLogin();
-      return null;
-    }
+  if (authError?.type === 'user_not_registered') {
+    return <UserNotRegisteredError />;
   }
+
+  const showPasscode = !isAuthenticated;
+
+  const attemptsLeft = authError?.attemptsLeft ?? null;
+  const maxAttempts = authError?.maxAttempts ?? 4;
 
   return (
     <Routes>
       <Route element={
-        <PublicLayout
-          t={langHook.t}
-          lang={langHook.lang}
-          setLang={langHook.setLang}
-          isRTL={langHook.isRTL}
-          supportedLanguages={langHook.supportedLanguages}
-          theme={themeHook.theme}
-          toggleTheme={themeHook.toggleTheme}
-        />
+          <PublicLayout
+            t={langHook.t}
+            lang={langHook.lang}
+            setLang={langHook.setLang}
+            isRTL={langHook.isRTL}
+            supportedLanguages={langHook.supportedLanguages}
+          />
       }>
         <Route path="/" element={<Home />} />
         <Route path="/home" element={<Navigate to="/" replace />} />
@@ -66,14 +67,28 @@ const AuthenticatedApp = () => {
         <Route path="/services" element={<Services />} />
         <Route path="/contact" element={<Contact />} />
       </Route>
-      <Route element={<AdminLayout />}>
-        <Route path="/admin" element={<AdminDashboard />} />
-        <Route path="/admin/categories" element={<AdminCategories />} />
-        <Route path="/admin/services" element={<AdminServices />} />
-        <Route path="/admin/leads" element={<AdminLeads />} />
-        <Route path="/admin/orders" element={<AdminOrders />} />
-        <Route path="/admin/content" element={<AdminContent />} />
-      </Route>
+      {showPasscode ? (
+        <Route
+          path="/admin/*"
+          element={
+            <PasscodePage
+              initialAttemptsLeft={attemptsLeft}
+              maxAttempts={maxAttempts}
+              errorMessage={authError?.message}
+            />
+          }
+        />
+      ) : (
+        <Route element={<AdminLayout />}>
+          <Route path="/admin" element={<AdminDashboard />} />
+          <Route path="/admin/categories" element={<AdminCategories />} />
+          <Route path="/admin/services" element={<AdminServices />} />
+          <Route path="/admin/leads" element={<AdminLeads />} />
+          <Route path="/admin/orders" element={<AdminOrders />} />
+          <Route path="/admin/content" element={<AdminContent />} />
+          <Route path="/admin/videos" element={<Videos />} />
+        </Route>
+      )}
       <Route path="*" element={<PageNotFound />} />
     </Routes>
   );
@@ -83,9 +98,11 @@ function App() {
   return (
     <AuthProvider>
       <QueryClientProvider client={queryClientInstance}>
-        <Router>
-          <AuthenticatedApp />
-        </Router>
+        <LanguageProvider>
+          <Router>
+            <AuthenticatedApp />
+          </Router>
+        </LanguageProvider>
         <Toaster />
       </QueryClientProvider>
     </AuthProvider>

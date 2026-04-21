@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Menu, X, Moon, Sun, Globe, ChevronDown } from 'lucide-react';
+import { Menu, X, Globe, ChevronDown } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
@@ -9,7 +9,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 
-export default function Navbar({ t, lang, setLang, isRTL, supportedLanguages, theme, toggleTheme }) {
+export default function Navbar({ t, lang, setLang, isRTL, supportedLanguages }) {
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const location = useLocation();
@@ -44,17 +44,14 @@ export default function Navbar({ t, lang, setLang, isRTL, supportedLanguages, th
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16 lg:h-20">
         {/* Logo */}
-        <Link to="/" className="flex items-center gap-2 group">
+        <Link to="/" className="group">
           <div className="w-13 h-13 rounded-xl bg-gradient-to-br from-navy to-orange flex items-center justify-center">
-                <img
-                  src="/netclogo.png"
-                  alt="NETC logo"
-                  className="w-13 h-12 object-contain"
-                />
-            </div>
-          <span className="text-xl font-inter font-bold text-foreground tracking-tight">
-            NETC
-          </span>
+            <img
+              src="/netclogo.png"
+              alt="NETC logo"
+              className="w-13 h-12 object-contain"
+            />
+          </div>
         </Link>
 
           {/* Desktop Nav */}
@@ -99,15 +96,6 @@ export default function Navbar({ t, lang, setLang, isRTL, supportedLanguages, th
             </DropdownMenu>
 
             {/* Theme Toggle */}
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={toggleTheme}
-              className="text-muted-foreground h-9 w-9"
-            >
-              {theme === 'dark' ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
-            </Button>
-
             {/* CTA */}
             <Link to="/contact" className="hidden lg:block">
               <Button className="bg-accent hover:bg-accent/90 text-accent-foreground rounded-xl px-6 font-medium">

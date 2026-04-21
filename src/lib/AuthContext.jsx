@@ -22,7 +22,12 @@ export const AuthProvider = ({ children }) => {
       setUser(null);
       setIsAuthenticated(false);
       if (error.status === 401 || error.status === 403) {
-        setAuthError({ type: 'auth_required', message: 'Authentication required' });
+        setAuthError({
+          type: 'auth_required',
+          message: error.message || 'Authentication required',
+          attemptsLeft: error.data?.attemptsLeft ?? null,
+          maxAttempts: error.data?.maxAttempts ?? 4,
+        });
       }
     } finally {
       setIsLoadingAuth(false);
@@ -33,17 +38,17 @@ export const AuthProvider = ({ children }) => {
     checkAppState();
   }, [checkAppState]);
 
-  const logout = useCallback((shouldRedirect = true) => {
+  const logout = useCallback(async (shouldRedirect = true) => {
     setUser(null);
     setIsAuthenticated(false);
-    base44.auth.logout();
+    await base44.auth.logout();
     if (shouldRedirect) {
       window.location.href = '/';
     }
   }, []);
 
   const navigateToLogin = useCallback(() => {
-    base44.auth.redirectToLogin(window.location.href);
+    base44.auth.redirectToLogin();
   }, []);
 
   return (

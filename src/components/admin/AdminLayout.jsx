@@ -1,14 +1,14 @@
 import { Outlet, Link, useLocation } from 'react-router-dom';
-import { LayoutDashboard, FolderOpen, Briefcase, Users, ShoppingCart, FileText, LogOut, Moon, Sun, Globe, ChevronDown } from 'lucide-react';
+import { LayoutDashboard, FolderOpen, Briefcase, Users, ShoppingCart, FileText, LogOut, Globe, ChevronDown, Video } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import useLanguage from '@/lib/useLanguage';
-import useTheme from '@/lib/useTheme';
 
 const navItems = [
   { path: '/admin', icon: LayoutDashboard, labelKey: 'admin.dashboard', exact: true },
   { path: '/admin/categories', icon: FolderOpen, labelKey: 'admin.categories' },
   { path: '/admin/services', icon: Briefcase, labelKey: 'admin.services' },
+  { path: '/admin/videos', icon: Video, labelKey: 'videos' },
   { path: '/admin/leads', icon: Users, labelKey: 'admin.leads' },
   { path: '/admin/orders', icon: ShoppingCart, labelKey: 'admin.orders' },
   { path: '/admin/content', icon: FileText, labelKey: 'admin.content' },
@@ -17,7 +17,6 @@ const navItems = [
 export default function AdminLayout() {
   const location = useLocation();
   const { t, lang, setLang, supportedLanguages } = useLanguage();
-  const { theme, toggleTheme } = useTheme();
 
   const isActive = (item) => {
     if (item.exact) return location.pathname === item.path;
@@ -109,9 +108,6 @@ export default function AdminLayout() {
               </DropdownMenuContent>
             </DropdownMenu>
 
-            <Button variant="ghost" size="icon" onClick={toggleTheme} className="h-9 w-9 text-muted-foreground">
-              {theme === 'dark' ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
-            </Button>
           </div>
         </header>
 

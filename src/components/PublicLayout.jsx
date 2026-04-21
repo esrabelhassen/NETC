@@ -4,7 +4,7 @@ import Footer from './Footer';
 import AnimatedBackground from './AnimatedBackground';
 import LeadPopup from './LeadPopup';
 
-export default function PublicLayout({ t, lang, setLang, isRTL, supportedLanguages, theme, toggleTheme }) {
+export default function PublicLayout({ t, lang, setLang, isRTL, supportedLanguages }) {
   return (
     <div className="min-h-screen relative">
       <AnimatedBackground />
@@ -14,8 +14,6 @@ export default function PublicLayout({ t, lang, setLang, isRTL, supportedLanguag
         setLang={setLang}
         isRTL={isRTL}
         supportedLanguages={supportedLanguages}
-        theme={theme}
-        toggleTheme={toggleTheme}
       />
       <main className="relative z-10">
         <Outlet />
