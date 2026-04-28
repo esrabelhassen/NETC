@@ -2,7 +2,6 @@ import { Outlet } from 'react-router-dom';
 import Navbar from './Navbar';
 import Footer from './Footer';
 import AnimatedBackground from './AnimatedBackground';
-import LeadPopup from './LeadPopup';
 
 export default function PublicLayout({ t, lang, setLang, isRTL, supportedLanguages }) {
   return (
@@ -19,7 +18,6 @@ export default function PublicLayout({ t, lang, setLang, isRTL, supportedLanguag
         <Outlet />
       </main>
       <Footer t={t} />
-      <LeadPopup t={t} />
     </div>
   );
 }
