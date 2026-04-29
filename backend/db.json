@@ -1,23 +1,5 @@
 {
-  "services": [
-    {
-      "id": "78591824-18e8-44f5-99bd-fb8b90e86225",
-      "created_date": "2026-03-26T21:41:39.205Z",
-      "updated_date": "2026-04-21T18:56:50.020Z",
-      "title_en": "web dev",
-      "title_fr": "web dev",
-      "title_ar": "",
-      "description_en": "okay",
-      "description_fr": "test",
-      "description_ar": "",
-      "category_id": "69652e54-6ff3-41ac-8646-602abb7596f7",
-      "price": null,
-      "price_type": "fixed",
-      "service_type": "development",
-      "status": "active",
-      "order": 0
-    }
-  ],
+  "services": [],
   "categories": [],
   "contents": [],
   "leads": [
@@ -80,5 +62,16 @@
     }
   ],
   "orders": [],
-  "videos": []
+  "videos": [
+    {
+      "id": "5318383f-5fe4-4cbc-a5aa-e42fdc0fdd7b",
+      "created_date": "2026-04-29T17:00:34.774Z",
+      "updated_date": "2026-04-29T17:00:34.774Z",
+      "title": "product",
+      "description": "",
+      "url": "",
+      "type": "direct",
+      "order": 0
+    }
+  ]
 }
