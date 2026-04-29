@@ -36,6 +36,9 @@ const translations = {
     'hero.videoSection.watch': 'Watch Episode',
     'hero.videoSection.upNext': 'Up next',
     'hero.videoSection.empty': 'Videos coming soon—stay tuned.',
+    'home.videoCard.title': 'Our Products',
+    'home.videoCard.empty': 'No videos yet',
+    'home.videoCard.overview': 'Short overview',
 
 
     // Services
@@ -370,6 +373,9 @@ const translations = {
     'hero.videoSection.watch': 'Voir l’épisode',
     'hero.videoSection.upNext': 'À suivre',
     'hero.videoSection.empty': 'Vidéo à venir — restez connectés.',
+    'home.videoCard.title': 'Nos Produits',
+    'home.videoCard.empty': 'Pas encore de vidéos',
+    'home.videoCard.overview': 'Bref aperçu',
 
     'services.title': 'Nos Services',
     'services.subtitle': 'Solutions technologiques complètes adaptées à votre entreprise',
@@ -686,6 +692,9 @@ const translations = {
     'hero.videoSection.watch': 'شاهد الحلقة',
     'hero.videoSection.upNext': 'التالي',
     'hero.videoSection.empty': 'فيديوهات قادمة قريبًا، ترقب المزيد.',
+    'home.videoCard.title': 'منتجاتنا',
+    'home.videoCard.empty': 'لا توجد فيديوهات بعد',
+    'home.videoCard.overview': 'نظرة عامة قصيرة',
 
     'services.title': 'خدماتنا',
     'services.subtitle': 'حلول تكنولوجية شاملة مصممة لعملك.',

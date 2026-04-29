@@ -80,10 +80,10 @@ export default function HeroSection({ t, videos = [] }) {
           </div>
           <div className="flex justify-center lg:justify-end">
             <div className="w-full max-w-lg">
-              <VideoCard videos={videos} />
-            </div>
+            <VideoCard videos={videos} t={t} />
           </div>
         </div>
+      </div>
       </div>
     </section>
   );

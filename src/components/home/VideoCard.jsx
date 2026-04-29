@@ -7,9 +7,14 @@ const YOUTUBE_REGEX = /(?:youtu\.be\/|youtube\.com\/(?:watch\?v=|embed\/|shorts\
 const getYouTubeId = (url = '') => (url.match(YOUTUBE_REGEX)?.[1] ?? '');
 const getVideoUrl = (video = {}) => video?.url || video?.video_url || video?.link || video?.src || '';
 const hasYouTube = (video) => Boolean(getYouTubeId(getVideoUrl(video)));
-const getEmbedUrl = (video) => (hasYouTube(video) ? `https://www.youtube.com/embed/${getYouTubeId(getVideoUrl(video))}?rel=0&modestbranding=1` : getVideoUrl(video));
+const getEmbedUrl = (video) => {
+  const url = getVideoUrl(video);
+  const youtubeId = getYouTubeId(url);
+  if (!youtubeId) return url;
+  return `https://www.youtube.com/embed/${youtubeId}?rel=0&modestbranding=1&autoplay=1&mute=1&playsinline=1`;
+};
 
-const VideoCard = ({ videos = [] }) => {
+const VideoCard = ({ videos = [], t = (key) => key }) => {
   const [featured, setFeatured] = useState(videos.length ? videos[0] : null);
 
   useEffect(() => {
@@ -23,7 +28,7 @@ const VideoCard = ({ videos = [] }) => {
   return (
     <GlassCard className="flex flex-col gap-4 p-6 max-w-full">
       <div className="flex items-center justify-between">
-        <h3 className="text-lg font-semibold text-white">Our Projects</h3>
+        <h3 className="text-lg font-semibold text-white">{t('home.videoCard.title')}</h3>
         <span className="text-xs font-semibold tracking-wider text-orange-400 bg-orange-500/10 border border-orange-500/30 px-3 py-1 rounded-full">
           {videos.length}
         </span>
@@ -43,13 +48,16 @@ const VideoCard = ({ videos = [] }) => {
             <video
               src={getVideoUrl(featured)}
               controls
+              autoPlay
+              muted
+              playsInline
               className="w-full h-full object-cover"
             />
           )
         ) : (
           <div className="flex flex-col items-center justify-center gap-3 text-center text-orange-200">
             <Video className="h-12 w-12 text-orange-400" />
-            <p className="text-sm text-orange-300/80">No videos yet</p>
+            <p className="text-sm text-orange-300/80">{t('home.videoCard.empty')}</p>
           </div>
         )}
       </div>
@@ -80,7 +88,7 @@ const VideoCard = ({ videos = [] }) => {
               </div>
               <div className="flex-1 min-w-0">
                 <p className="text-sm font-semibold text-white truncate">{video.title || 'Untitled'}</p>
-                <p className="text-xs text-gray-400 truncate">{video.description || 'Short overview'}</p>
+                <p className="text-xs text-gray-400 truncate">{video.description || t('home.videoCard.overview')}</p>
               </div>
               <span className="text-xs font-semibold text-gray-500">
                 {String(index + 1).padStart(2, '0')}
