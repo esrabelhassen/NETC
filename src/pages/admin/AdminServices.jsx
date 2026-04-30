@@ -13,7 +13,31 @@ const emptyForm = {
   title_en: '', title_fr: '', title_ar: '',
   description_en: '', description_fr: '', description_ar: '',
   category_id: '', price: '', price_type: 'quote',
+  price_currency: 'usd',
   service_type: 'development', status: 'active', order: 0,
+};
+
+const currencySymbols = {
+  usd: '$',
+  eur: '€',
+  tnd: 'د.ت',
+};
+
+const getCurrencyCode = (currency) => (currency ? currency.toUpperCase() : 'USD');
+
+const getPriceLabel = (svc) => {
+  const currency = (svc.price_currency || 'USD').toLowerCase();
+  const symbol = currencySymbols[currency] || '';
+
+  if (svc.price_type === 'fixed') {
+    const amount = svc.price ?? '';
+    if (symbol) return `${symbol}${amount}`;
+    return `${amount} ${getCurrencyCode(currency)}`.trim();
+  }
+
+  if (svc.price_type === 'free') return 'Free';
+
+  return `Quote (${getCurrencyCode(currency)})`;
 };
 
 export default function AdminServices() {
@@ -50,7 +74,7 @@ export default function AdminServices() {
       title_en: svc.title_en || '', title_fr: svc.title_fr || '', title_ar: svc.title_ar || '',
       description_en: svc.description_en || '', description_fr: svc.description_fr || '', description_ar: svc.description_ar || '',
       category_id: svc.category_id || '', price: svc.price || '',
-      price_type: svc.price_type || 'quote', service_type: svc.service_type || 'development',
+      price_type: svc.price_type || 'quote', price_currency: svc.price_currency || 'usd', service_type: svc.service_type || 'development',
       status: svc.status || 'active', order: svc.order || 0,
     });
     setDialogOpen(true);
@@ -124,7 +148,7 @@ export default function AdminServices() {
                 <td className="px-6 py-4 text-sm font-medium text-foreground">{svc.title_en}</td>
                 <td className="px-6 py-4 text-sm text-muted-foreground hidden md:table-cell capitalize">{svc.service_type}</td>
                 <td className="px-6 py-4 text-sm text-muted-foreground hidden md:table-cell">
-                  {svc.price_type === 'fixed' ? `$${svc.price}` : svc.price_type === 'free' ? 'Free' : 'Quote'}
+                  {getPriceLabel(svc)}
                 </td>
                 <td className="px-6 py-4">
                   <span className={`text-xs font-medium px-2 py-0.5 rounded-full ${statusColors[svc.status] || ''}`}>
@@ -179,7 +203,7 @@ export default function AdminServices() {
               <label className="text-xs font-medium text-muted-foreground">Description (AR)</label>
               <Textarea value={form.description_ar} onChange={e => setForm({...form, description_ar: e.target.value})} className="mt-1" dir="rtl" />
             </div>
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+            <div className="grid grid-cols-2 sm:grid-cols-5 gap-3">
               <div>
                 <label className="text-xs font-medium text-muted-foreground">Category</label>
                 <Select value={form.category_id} onValueChange={v => setForm({...form, category_id: v})}>
@@ -203,6 +227,17 @@ export default function AdminServices() {
               <div>
                 <label className="text-xs font-medium text-muted-foreground">Price</label>
                 <Input type="number" value={form.price} onChange={e => setForm({...form, price: e.target.value})} className="mt-1" />
+              </div>
+              <div>
+                <label className="text-xs font-medium text-muted-foreground">Currency</label>
+                <Select value={form.price_currency} onValueChange={v => setForm({...form, price_currency: v})}>
+                  <SelectTrigger className="mt-1"><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="usd">USD</SelectItem>
+                    <SelectItem value="eur">EUR</SelectItem>
+                    <SelectItem value="tnd">TND</SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
               <div>
                 <label className="text-xs font-medium text-muted-foreground">Service Type</label>

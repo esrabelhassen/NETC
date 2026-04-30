@@ -8,6 +8,29 @@ import { Button } from '@/components/ui/button';
 import { ArrowRight, Code, Settings } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 
+const currencySymbols = {
+  usd: '$',
+  eur: '€',
+  tnd: 'د.ت',
+};
+
+const getCurrencyCode = (currency) => (currency ? currency.toUpperCase() : 'USD');
+
+const getServicePriceLabel = (service) => {
+  const currency = (service.price_currency || 'USD').toLowerCase();
+  const symbol = currencySymbols[currency] || '';
+
+  if (service.price_type === 'fixed') {
+    const amount = service.price ?? '';
+    if (symbol) return `${symbol}${amount}`;
+    return `${amount} ${getCurrencyCode(currency)}`.trim();
+  }
+
+  if (service.price_type === 'free') return 'Free';
+
+  return `Quote (${getCurrencyCode(currency)})`;
+};
+
 export default function Services() {
   const { t, tField, lang } = useLanguage();
   const [services, setServices] = useState([]);
@@ -105,7 +128,7 @@ export default function Services() {
                       </div>
                       {service.price_type === 'fixed' && service.price && (
                         <span className="text-sm font-semibold text-accent">
-                          ${service.price}
+                          {getServicePriceLabel(service)}
                         </span>
                       )}
                     </div>

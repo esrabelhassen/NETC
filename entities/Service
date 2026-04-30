@@ -34,6 +34,12 @@
       "type": "number",
       "title": "Price"
     },
+    "price_currency": {
+      "type": "string",
+      "title": "Currency",
+      "enum": ["usd", "eur", "tnd"],
+      "default": "usd"
+    },
     "price_type": {
       "type": "string",
       "enum": [

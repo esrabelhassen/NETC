@@ -62,16 +62,5 @@
     }
   ],
   "orders": [],
-  "videos": [
-    {
-      "id": "5318383f-5fe4-4cbc-a5aa-e42fdc0fdd7b",
-      "created_date": "2026-04-29T17:00:34.774Z",
-      "updated_date": "2026-04-29T17:00:34.774Z",
-      "title": "product",
-      "description": "",
-      "url": "",
-      "type": "direct",
-      "order": 0
-    }
-  ]
+  "videos": []
 }
